@@ -18,21 +18,19 @@ public class FirstSpringBootApplication {
 	public static void main(String[] args) {
 		var run = SpringApplication.run(FirstSpringBootApplication.class, args);
 		UserRespository bean = run.getBean(UserRespository.class);
-
-		List<User> findByName = bean.findByName("vikas");
-		findByName.forEach(u -> {
-			System.out.println(u);
-		});
-
-		List<User> findByNameAndCity = bean.findByNameAndCity("rahul", "kota");
-		findByNameAndCity.forEach(u -> {
-			System.out.println(u);
-		});
-
-		List<User> findByNameStartingWith = bean.findByNameStartingWith("vik");
-		findByNameStartingWith.forEach(u -> {
-			System.out.println(u);
-		});
+                 List<User> allUser = bean.getAllUser();
+                 allUser.forEach(u->{System.out.println(u);});
+                 
+                 System.out.println("_____________________________________");
+                 
+                 List<User> whereUser = bean.getWhereUser("vikas");
+                 whereUser.forEach(u->{System.out.println(u);});
+                 
+                 System.out.println("_____________________________________");
+                 
+                 List<User> allUser1 = bean.getAllUserByNative();
+                 allUser1.forEach(u->{System.out.println(u);});
+	 
 	}
 
 }
