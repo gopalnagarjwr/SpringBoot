@@ -1,7 +1,11 @@
 package com.learnrestapimethods.controllar;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,28 +25,53 @@ public class HomeControllar {
 	private EmpServiec emps;
 
 	@GetMapping("/Emp")
-	public List<Employee> getAllEmp() {
-		return this.emps.getAllEmp();
+	public ResponseEntity<List<Employee>> getAllEmp() {
+		if (this.emps.getAllEmp().size() <= 0) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
+		return ResponseEntity.ok().body(this.emps.getAllEmp());
 	}
 
 	@GetMapping("/Emp/{id}")
-	public Employee getEmpById(@PathVariable("id") int id) {
-		return this.emps.getEmp(id);
+	public ResponseEntity<Employee> getEmpById(@PathVariable("id") int id) {
+		Employee emp = this.emps.getEmp(id);
+		if (emp == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
+		return ResponseEntity.of(Optional.of(emp));
 	}
+	
 
 	@PostMapping("/Emp")
-	public Employee addEmp(@RequestBody Employee emp) {
-		return this.emps.add(emp);
+	public ResponseEntity<Employee> addEmp(@RequestBody Employee emp) {
+		try {
+			Employee add = this.emps.add(emp);
+			return ResponseEntity.status(HttpStatus.CREATED).build();
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
 	}
 
 	@PutMapping("/Emp")
-	public Employee UpdateEmp(@RequestBody Employee emp) {
-		return this.emps.Update(emp);
+	public ResponseEntity<Employee> UpdateEmp(@RequestBody Employee emp) {
+
+		try {
+			Employee update = this.emps.Update(emp);
+			return ResponseEntity.of(Optional.of(update));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
 	}
 
 	@DeleteMapping("/Emp/{EmpId}")
-	public void DeleteEmp(@PathVariable("EmpId") int id) {
-		this.emps.delete(id);
+	public ResponseEntity<Void> DeleteEmp(@PathVariable("EmpId") int id) {
+		try {
+			this.emps.delete(id);
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+
 	}
 
 }
